@@ -2,6 +2,8 @@ package com.gildedrose
 
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.CsvSource
 
 internal class GildedRoseTest {
 
@@ -141,67 +143,52 @@ internal class GildedRoseTest {
         assertEquals(1, app.items[0].quality)
     }
 
-    @Test
-    fun testBackstageUpdateQuality() {
-        val items = arrayOf<Item>(
-                Item("Backstage passes to a TAFKAL80ETC concert", 2, 50),
-                Item("Backstage passes to a TAFKAL80ETC concert", 2, 5),
-                Item("Backstage passes to a TAFKAL80ETC concert", 10, 5),
-                Item("Backstage passes to a TAFKAL80ETC concert", 11, 5)
-                )
+    @ParameterizedTest
+    @CsvSource(
+            "2, 50, 50",
+            "2, 5, 8",
+            "10, 5, 7",
+            "11, 5, 6"
+    )
+    fun testBackstageUpdateQuality(sellIn: Int, quality: Int, expected: Int) {
+        val items = arrayOf<Item>(Item("Backstage passes to a TAFKAL80ETC concert", sellIn, quality))
         val app = GildedRose(items)
-        var newQuality = app.backstageUpdateQuality(items[0])
-        assertEquals(50,newQuality)
-        newQuality = app.backstageUpdateQuality(items[1])
-        assertEquals(8,newQuality)
-        newQuality = app.backstageUpdateQuality(items[2])
-        assertEquals(7,newQuality)
-        newQuality = app.backstageUpdateQuality(items[3])
-        assertEquals(6,newQuality)
+        val newQuality = app.backstageUpdateQuality(items[0])
+        assertEquals(expected,newQuality)
     }
 
-    @Test
-    fun testStandardUpdateQuality() {
+    @ParameterizedTest
+    @CsvSource(
+            "2, 0, 0",
+            "-2, 1, 0",
+            "2, 5, 4",
+            "-2, 5, 3",
+            "0, 5, 3"
+    )
+    fun testStandardUpdateQuality(sellIn: Int, quality: Int, expected: Int) {
         val items = arrayOf<Item>(
-                Item("foo", 2, 0),
-                Item("foo", -2, 1),
-                Item("foo", 2, 5),
-                Item("foo", -2, 5),
-                Item("foo", 0, 5)
+                Item("foo", sellIn, quality)
         )
         val app = GildedRose(items)
         var newQuality = app.standardUpdateQuality(items[0])
-        assertEquals(0,newQuality)
-        newQuality = app.standardUpdateQuality(items[1])
-        assertEquals(0,newQuality)
-        newQuality = app.standardUpdateQuality(items[2])
-        assertEquals(4,newQuality)
-        newQuality = app.standardUpdateQuality(items[3])
-        assertEquals(3,newQuality)
-        newQuality = app.standardUpdateQuality(items[4])
-        assertEquals(3,newQuality)
+        assertEquals(expected,newQuality)
     }
 
-    @Test
-    fun testConjuredUpdateQuality() {
+    @ParameterizedTest
+    @CsvSource(
+            "2, 0, 0",
+            "-2, 1, 0",
+            "2, 5, 3",
+            "-2, 5, 1",
+            "0, 5, 1"
+    )
+    fun testConjuredUpdateQuality(sellIn: Int, quality: Int, expected: Int) {
         val items = arrayOf<Item>(
-                Item("Conjured", 2, 0),
-                Item("Conjured", -2, 1),
-                Item("Conjured", 2, 5),
-                Item("Conjured", -2, 5),
-                Item("Conjured", 0, 5)
+                Item("foo", sellIn, quality)
         )
         val app = GildedRose(items)
         var newQuality = app.conjuredUpdateQuality(items[0])
-        assertEquals(0,newQuality)
-        newQuality = app.conjuredUpdateQuality(items[1])
-        assertEquals(0,newQuality)
-        newQuality = app.conjuredUpdateQuality(items[2])
-        assertEquals(3,newQuality)
-        newQuality = app.conjuredUpdateQuality(items[3])
-        assertEquals(1,newQuality)
-        newQuality = app.conjuredUpdateQuality(items[4])
-        assertEquals(1,newQuality)
+        assertEquals(expected,newQuality)
     }
 }
 
