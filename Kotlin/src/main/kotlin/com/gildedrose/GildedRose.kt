@@ -1,56 +1,36 @@
 package com.gildedrose
 
+import java.lang.Integer.min
+import java.lang.Integer.max
+
 class GildedRose(var items: Array<Item>) {
 
+    fun backstageUpdateQuality(item: Item): Int {
+        return when{
+            item.sellIn <=0 -> 0
+            item.sellIn <=5 -> min(item.quality + 3,50)
+            item.sellIn <=10 -> min(item.quality + 2,50)
+            else -> item.quality + 1
+        }
+    }
+
+    fun standardUpdateQuality(item: Item): Int {
+        return max(item.quality - when{
+            item.sellIn <=0 -> 2
+            else -> 1
+        },0)
+    }
+
     fun updateQuality() {
-        for (i in items.indices) {
-            if (items[i].name != "Aged Brie" && items[i].name != "Backstage passes to a TAFKAL80ETC concert") {
-                if (items[i].quality > 0) {
-                    if (items[i].name != "Sulfuras, Hand of Ragnaros") {
-                        items[i].quality = items[i].quality - 1
-                    }
-                }
-            } else {
-                if (items[i].quality < 50) {
-                    items[i].quality = items[i].quality + 1
+        for (item in items) {
 
-                    if (items[i].name == "Backstage passes to a TAFKAL80ETC concert") {
-                        if (items[i].sellIn < 11) {
-                            if (items[i].quality < 50) {
-                                items[i].quality = items[i].quality + 1
-                            }
-                        }
-
-                        if (items[i].sellIn < 6) {
-                            if (items[i].quality < 50) {
-                                items[i].quality = items[i].quality + 1
-                            }
-                        }
-                    }
-                }
+            item.quality = when(item.name){
+                "Aged Brie" -> min(item.quality + 1, 50)
+                "Backstage passes to a TAFKAL80ETC concert" ->  backstageUpdateQuality(item)
+                "Sulfuras, Hand of Ragnaros" -> 80
+                else -> standardUpdateQuality(item)
             }
-
-            if (items[i].name != "Sulfuras, Hand of Ragnaros") {
-                items[i].sellIn = items[i].sellIn - 1
-            }
-
-            if (items[i].sellIn < 0) {
-                if (items[i].name != "Aged Brie") {
-                    if (items[i].name != "Backstage passes to a TAFKAL80ETC concert") {
-                        if (items[i].quality > 0) {
-                            if (items[i].name != "Sulfuras, Hand of Ragnaros") {
-                                items[i].quality = items[i].quality - 1
-                            }
-                        }
-                    } else {
-                        items[i].quality = items[i].quality - items[i].quality
-                    }
-                } else {
-                    if (items[i].quality < 50) {
-                        items[i].quality = items[i].quality + 1
-                    }
-                }
-            }
+            item.sellIn = item.sellIn - 1
         }
     }
 
