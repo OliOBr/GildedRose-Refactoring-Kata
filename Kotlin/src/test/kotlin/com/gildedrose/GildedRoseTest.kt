@@ -31,7 +31,7 @@ internal class GildedRoseTest {
 
     @Test
     fun testStandardItemQualityAfterSellBy() {
-        val items = arrayOf<Item>(Item("foo", -1, 5))
+        val items = arrayOf<Item>(Item("foo", 0, 5))
         val app = GildedRose(items)
         app.updateQuality()
         assertEquals(3, app.items[0].quality)
@@ -115,6 +115,93 @@ internal class GildedRoseTest {
         val app = GildedRose(items)
         app.updateQuality()
         assertEquals(0, app.items[0].quality)
+    }
+
+    @Test
+    fun testConjuredItemQualityNeverNegative() {
+        val items = arrayOf<Item>(Item("Conjured", 1, 0))
+        val app = GildedRose(items)
+        app.updateQuality()
+        assertEquals(0, app.items[0].quality)
+    }
+
+    @Test
+    fun testConjuredItemQuality() {
+        val items = arrayOf<Item>(Item("Conjured", 1, 5))
+        val app = GildedRose(items)
+        app.updateQuality()
+        assertEquals(3, app.items[0].quality)
+    }
+
+    @Test
+    fun testConjuredItemQualityAfterSellBy() {
+        val items = arrayOf<Item>(Item("Conjured", -1, 5))
+        val app = GildedRose(items)
+        app.updateQuality()
+        assertEquals(1, app.items[0].quality)
+    }
+
+    @Test
+    fun testBackstageUpdateQuality() {
+        val items = arrayOf<Item>(
+                Item("Backstage passes to a TAFKAL80ETC concert", 2, 50),
+                Item("Backstage passes to a TAFKAL80ETC concert", 2, 5),
+                Item("Backstage passes to a TAFKAL80ETC concert", 10, 5),
+                Item("Backstage passes to a TAFKAL80ETC concert", 11, 5)
+                )
+        val app = GildedRose(items)
+        var newQuality = app.backstageUpdateQuality(items[0])
+        assertEquals(50,newQuality)
+        newQuality = app.backstageUpdateQuality(items[1])
+        assertEquals(8,newQuality)
+        newQuality = app.backstageUpdateQuality(items[2])
+        assertEquals(7,newQuality)
+        newQuality = app.backstageUpdateQuality(items[3])
+        assertEquals(6,newQuality)
+    }
+
+    @Test
+    fun testStandardUpdateQuality() {
+        val items = arrayOf<Item>(
+                Item("foo", 2, 0),
+                Item("foo", -2, 1),
+                Item("foo", 2, 5),
+                Item("foo", -2, 5),
+                Item("foo", 0, 5)
+        )
+        val app = GildedRose(items)
+        var newQuality = app.standardUpdateQuality(items[0])
+        assertEquals(0,newQuality)
+        newQuality = app.standardUpdateQuality(items[1])
+        assertEquals(0,newQuality)
+        newQuality = app.standardUpdateQuality(items[2])
+        assertEquals(4,newQuality)
+        newQuality = app.standardUpdateQuality(items[3])
+        assertEquals(3,newQuality)
+        newQuality = app.standardUpdateQuality(items[4])
+        assertEquals(3,newQuality)
+    }
+
+    @Test
+    fun testConjuredUpdateQuality() {
+        val items = arrayOf<Item>(
+                Item("Conjured", 2, 0),
+                Item("Conjured", -2, 1),
+                Item("Conjured", 2, 5),
+                Item("Conjured", -2, 5),
+                Item("Conjured", 0, 5)
+        )
+        val app = GildedRose(items)
+        var newQuality = app.conjuredUpdateQuality(items[0])
+        assertEquals(0,newQuality)
+        newQuality = app.conjuredUpdateQuality(items[1])
+        assertEquals(0,newQuality)
+        newQuality = app.conjuredUpdateQuality(items[2])
+        assertEquals(3,newQuality)
+        newQuality = app.conjuredUpdateQuality(items[3])
+        assertEquals(1,newQuality)
+        newQuality = app.conjuredUpdateQuality(items[4])
+        assertEquals(1,newQuality)
     }
 }
 
